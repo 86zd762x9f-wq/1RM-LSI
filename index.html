@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>1RM & Symmetry Calculator</title>
+  <meta name="description" content="Calculate estimated 1 Rep Max using Epley, Brzycki, and Lombardi formulas with leg symmetry and hop test indices.">
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="1RM Calc">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0c0e14">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6.5 6.5h11"/>
+          <path d="M6.5 17.5h11"/>
+          <rect x="2" y="5" width="4" height="3" rx="1"/>
+          <rect x="2" y="16" width="4" height="3" rx="1"/>
+          <rect x="18" y="5" width="4" height="3" rx="1"/>
+          <rect x="18" y="16" width="4" height="3" rx="1"/>
+          <path d="M12 5v14"/>
+        </svg>
+      </div>
+      <h1>1RM & Symmetry Calculator</h1>
+      <p class="subtitle">Estimate your one-rep max &amp; assess bilateral symmetry</p>
+    </header>
+
+    <!-- 1RM Section -->
+    <section class="card" id="rm-section">
+      <div class="card-header">
+        <h2>Estimated 1RM</h2>
+        <span class="badge">3 Formulas</span>
+      </div>
+
+      <div class="input-columns">
+        <!-- Left Side -->
+        <div class="input-column left-column">
+          <div class="column-label">
+            <span class="dot dot-left"></span>
+            Left
+          </div>
+          <div class="input-group">
+            <label for="left-weight">Weight</label>
+            <div class="input-wrapper">
+              <input type="number" id="left-weight" placeholder="0" min="0" step="0.5" oninput="calculate()">
+              <span class="unit">kg</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="left-reps">Reps</label>
+            <div class="input-wrapper">
+              <input type="number" id="left-reps" placeholder="0" min="1" max="30" step="1" oninput="calculate()">
+              <span class="unit">reps</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="column-divider">
+          <span>VS</span>
+        </div>
+
+        <!-- Right Side -->
+        <div class="input-column right-column">
+          <div class="column-label">
+            <span class="dot dot-right"></span>
+            Right
+          </div>
+          <div class="input-group">
+            <label for="right-weight">Weight</label>
+            <div class="input-wrapper">
+              <input type="number" id="right-weight" placeholder="0" min="0" step="0.5" oninput="calculate()">
+              <span class="unit">kg</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="right-reps">Reps</label>
+            <div class="input-wrapper">
+              <input type="number" id="right-reps" placeholder="0" min="1" max="30" step="1" oninput="calculate()">
+              <span class="unit">reps</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Grid -->
+      <div class="results-grid">
+        <div class="result-header">
+          <span>Method</span>
+          <span>Left 1RM</span>
+          <span>Right 1RM</span>
+        </div>
+        <div class="result-row" id="epley-row">
+          <span class="method-name">Epley</span>
+          <span class="result-value" id="epley-left">—</span>
+          <span class="result-value" id="epley-right">—</span>
+        </div>
+        <div class="result-row" id="brzycki-row">
+          <span class="method-name">Brzycki</span>
+          <span class="result-value" id="brzycki-left">—</span>
+          <span class="result-value" id="brzycki-right">—</span>
+        </div>
+        <div class="result-row" id="lombardi-row">
+          <span class="method-name">Lombardi</span>
+          <span class="result-value" id="lombardi-left">—</span>
+          <span class="result-value" id="lombardi-right">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leg Symmetry Section -->
+    <section class="card" id="symmetry-section">
+      <div class="card-header">
+        <h2>Leg Strength Symmetry</h2>
+        <span class="badge badge-purple">Index</span>
+      </div>
+
+      <div class="symmetry-grid">
+        <div class="symmetry-block">
+          <div class="symmetry-header">
+            <div class="symmetry-label-row">
+              <span class="dot dot-left"></span>
+              <span>L / R</span>
+            </div>
+          </div>
+          <div class="symmetry-results">
+            <div class="symmetry-row">
+              <span class="method-tag">Epley</span>
+              <span class="symmetry-value" id="sym-epley-lr">—</span>
+            </div>
+            <div class="symmetry-row">
+              <span class="method-tag">Brzycki</span>
+              <span class="symmetry-value" id="sym-brzycki-lr">—</span>
+            </div>
+            <div class="symmetry-row">
+              <span class="method-tag">Lombardi</span>
+              <span class="symmetry-value" id="sym-lombardi-lr">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="symmetry-block">
+          <div class="symmetry-header">
+            <div class="symmetry-label-row">
+              <span class="dot dot-right"></span>
+              <span>R / L</span>
+            </div>
+          </div>
+          <div class="symmetry-results">
+            <div class="symmetry-row">
+              <span class="method-tag">Epley</span>
+              <span class="symmetry-value" id="sym-epley-rl">—</span>
+            </div>
+            <div class="symmetry-row">
+              <span class="method-tag">Brzycki</span>
+              <span class="symmetry-value" id="sym-brzycki-rl">—</span>
+            </div>
+            <div class="symmetry-row">
+              <span class="method-tag">Lombardi</span>
+              <span class="symmetry-value" id="sym-lombardi-rl">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Symmetry Bar Visual -->
+      <div class="symmetry-bar-container" id="symmetry-bar-visual" style="display:none;">
+        <div class="symmetry-bar-label">Avg Symmetry (Epley)</div>
+        <div class="symmetry-bar-track">
+          <div class="symmetry-bar-fill" id="symmetry-bar-fill"></div>
+          <div class="symmetry-bar-marker" id="symmetry-bar-marker">
+            <span id="symmetry-bar-pct">0%</span>
+          </div>
+        </div>
+        <div class="symmetry-bar-labels">
+          <span>0%</span>
+          <span>50%</span>
+          <span>100%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hop Test Section -->
+    <section class="card" id="hop-section">
+      <div class="card-header">
+        <h2>Hop Test Symmetry</h2>
+        <span class="badge badge-teal">Functional</span>
+      </div>
+
+      <div class="input-columns">
+        <!-- Left Hop -->
+        <div class="input-column left-column">
+          <div class="column-label">
+            <span class="dot dot-left"></span>
+            Left
+          </div>
+          <div class="input-group">
+            <label for="hop-left">Distance / Value</label>
+            <div class="input-wrapper">
+              <input type="number" id="hop-left" placeholder="0" min="0" step="0.1" oninput="calculateHop()">
+              <span class="unit">cm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="column-divider">
+          <span>VS</span>
+        </div>
+
+        <!-- Right Hop -->
+        <div class="input-column right-column">
+          <div class="column-label">
+            <span class="dot dot-right"></span>
+            Right
+          </div>
+          <div class="input-group">
+            <label for="hop-right">Distance / Value</label>
+            <div class="input-wrapper">
+              <input type="number" id="hop-right" placeholder="0" min="0" step="0.1" oninput="calculateHop()">
+              <span class="unit">cm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toggle Slider -->
+      <div class="toggle-container">
+        <span class="toggle-label" id="toggle-label-lr">L / R</span>
+        <label class="toggle-switch" for="hop-toggle">
+          <input type="checkbox" id="hop-toggle" onchange="calculateHop()">
+          <span class="toggle-slider"></span>
+        </label>
+        <span class="toggle-label" id="toggle-label-rl">R / L</span>
+      </div>
+
+      <!-- Hop Symmetry Result -->
+      <div class="hop-result-container">
+        <div class="hop-result-label" id="hop-result-label">Symmetry Index</div>
+        <div class="hop-result-value" id="hop-result-value">—</div>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>Formulas: Epley · Brzycki · Lombardi</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
